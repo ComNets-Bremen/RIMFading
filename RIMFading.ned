@@ -20,6 +20,6 @@ module RIMFading extends FreeSpacePathLoss
 		double a = default(1.5);
 		double b = default(1);
 		double model @unit(D) = default (2D);
-		double k = default(1);
-		     @class(RIMFading);
+		double k @unit(dB) = default(8dB);
+		@class(RIMFading);
 }
