@@ -39,10 +39,10 @@ There are two approaches for using the RIMFading model:
 
 The RIMfading model has a number of configurable parameters that are defined in the 'RIMFading.ned'. Each of these parameters has a default value and if they are required to be changed, use the `omnetpp.ini` file to set these changed values. The following list provides the parameters specific to the RIMFading model.
 
-- 'a' & 'b' - Distribution parameters of a Weibull distribution. These parameters  are used for random number distribution                 that produces floating-point(default a = 1.5 , b = 1); 
+- 'a' & 'b' - Distribution parameters of a Weibull distribution. These parameters  are used for random number distribution                 that produces floating-point(default a is 1.5 & b is 1); 
 - 'model'   - The RIMfading model is implemented in 2D and 3D. This parameter is used to specify the type of the model                     (default is 2D);
-- 'k'       - For the fading phenomena the Rician distribution is used. This parameter is used to calculate path loss for                   Rician fading (default is 8dB).
-- 'DOI'     - Unlike other propagation models, RIMfading is close to real scenarious. One of the parameter that makes the                   model more realistic is degree of irregularity(DOI). This parameter shows how irregular the radio range is                   (default is 0.006).
+- 'k'       - For the fading phenomena the Rician distribution is used. This parameter is used to calculate  the path loss                 for Rician fading (default is 8dB).
+- 'DOI'     - Unlike other propagation models, RIMfading is close to real scenarios. One of the parameter that makes the                   model more realistic is degree of irregularity (DOI). This parameter shows how irregular the radio range is                   (default is 0.006).
 
 
 Support
