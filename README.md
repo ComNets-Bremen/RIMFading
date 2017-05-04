@@ -12,7 +12,7 @@ This code is an implementation of the RIMFading Model in OMNeT++ Simulator for t
 
 Radio Propagation Models in OMNeT++
 ==========================
-Radio Propagaiton Models in OMNet++ can be seen in INET framewwork under the following path: src/inet/physicallayer/pathloss
+Radio Propagaiton Models in OMNet++ can be seen in INET framework under the following path: src/inet/physicallayer/pathloss
 
 
 To simplify the implementation of RIMFading, a set of base implementations are provided in OMNeT++ that implements some of the abstract methods of pathloss. These base implementations focus on implementing the basic functionality required for pathloss calculation that is used for further calculaction.
