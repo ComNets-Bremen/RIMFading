@@ -41,7 +41,7 @@ The RIMfading model has a number of configurable parameters that are defined in 
 
 - 'a'       - Scale parameter of a Weibull Distribution. The larger the scale, the more spread out the distribution(default                 is 1.5).
 
-- 'b' -     - Shape parameter of Weibull Distribution.
+- 'b'       - Shape parameter of Weibull Distribution.
 
 - 'model'   - The RIMfading model is implemented in 2D and 3D. This parameter is used to specify the type of the model                     (default is 2D);
 
