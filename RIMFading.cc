@@ -26,10 +26,14 @@
 * @authors : Behruz Khalilov (behruz@uni-bremen.de), Anas bin Muslim (anas1@uni-bremen.de)
 *
 */
-
+#include <iostream>
+#include <fstream>
 #include "inet/physicallayer/pathloss/RIMFading.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/physicallayer/contract/packetlevel/IRadioMedium.h"
+
+using namespace std;
+
 namespace inet {
 
 namespace physicallayer {
@@ -40,7 +44,7 @@ RIMFading::RIMFading() :
        a(1.5),
        b(1),
        model(2),
-       k(1)
+       DOI()
 {
 }
 
@@ -51,7 +55,7 @@ void RIMFading::initialize(int stage)
         a=par("a");
         b=par("b");
         model=par("model");
-        k = math::dB2fraction(par("k"));
+        DOI=par("DOI");
     }
 }
 
@@ -64,7 +68,7 @@ std::ostream& RIMFading::printToStream(std::ostream& stream, int level) const
         << ", a = " << a
         << ", b = " << b
         << ", Model = " << model
-        << ", k = " << k;
+        << ", DOI = " << DOI;
     return stream;
 }
 
@@ -153,16 +157,18 @@ double RIMFading::computeAngles3D(const ITransmission *transmission, const IArri
  * Path Loss calculation of RIMFading Propagation Model
  */
 
-double RIMFading::RIMPathLossCalculation(double los, double iter) const
+double RIMFading::RIMPathLossCalculation(double freeSpacePathLoss, double iter) const
 {
+
+    ofstream myfile;
 
     //Irregularity varies for each degree => ki varies
     double ki = 1;
     double ran = weibull(a,b);
     int sign = 0;
-    srand (time(NULL));
+
     for(int i=0; i<iter; i++){
-        sign = rand()%2;
+        sign = intuniform(0, 1);
         if(sign==0){sign = sign -1;}
         ran = weibull(a,b);
         if(i==0)
@@ -171,9 +177,13 @@ double RIMFading::RIMPathLossCalculation(double los, double iter) const
             ki += sign*(ran * DOI);
         }
     }
-    EV<<"Path Loss : "<<los * ki<<"\n";
+    EV<<"Path Loss : "<<freeSpacePathLoss * ki<<"\n";
+   //write the result of a path-loss in the file
+    myfile.open("pathloss.txt",std::ios::app);
+    myfile << "Path Loss : " << freeSpacePathLoss * ki <<"\n";
+    myfile.close();
 
-    return los * ki;
+    return freeSpacePathLoss * ki;
 }
 
 double RIMFading::computePathLoss(const ITransmission *transmission, const IArrival *arrival) const {
@@ -186,23 +196,12 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     m distance = m(recepiverPosition.distance(transmitterPosition));
     m waveLength = propagationSpeed / carrierFrequency;
 
+
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
-    double loss;
 
-    /*
-     * fading effect: indoor(Rician Distribution)
-     *
-     */
-    double c = 1.0 / (2.0 * (k + 1));
-    double x = normal(0, 1);
-    double y = normal(0, 1);
-    double rr = c * ((x + sqrt(2 * k)) * (x + sqrt(2 * k)) + y * y);
-
-    //loss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
-    loss = freeSpacePathLoss * rr; // PL calculated w.r.t fading
 
     if(model==2){
         theta = computeAngles2D(transmission,arrival);
@@ -215,7 +214,7 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
         EV<<"Please give dimension model either in 2D or 3D"<<"\n";
     }
     loopIterations = theta + phi;
-    double resultPL = RIMPathLossCalculation(loss, loopIterations);
+    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, loopIterations);
 
     EV<<"Path loss iteration : "<<resultPL<<"\n";
 
