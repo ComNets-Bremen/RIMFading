@@ -45,13 +45,14 @@ using namespace inet::physicalenvironment;
 class INET_API RIMFading : public FreeSpacePathLoss
 {
 protected:
-    double a,b,model,k ;
+    double a,b,model;
+
 
 protected:
     virtual void initialize(int stage) override;
 
 private:
-    float DOI= 0.006; // Degree of Irregularity
+    double DOI; // Degree of Irregularity
 
 public:
     RIMFading();
