@@ -1,3 +1,4 @@
+//
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +21,6 @@ module RIMFading extends FreeSpacePathLoss
 		double a = default(1.5);
 		double b = default(1);
 		double model @unit(D) = default (2D);
-		double k @unit(dB) = default(8dB);
+		double DOI = default(0.006);
 		@class(RIMFading);
 }
