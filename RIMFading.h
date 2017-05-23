@@ -46,13 +46,17 @@ class INET_API RIMFading : public FreeSpacePathLoss
 {
 protected:
     double a,b,model;
+    double DifferenceInPathLoss[360];
 
 
 protected:
     virtual void initialize(int stage) override;
 
+
 private:
     double DOI; // Degree of Irregularity
+
+ //   double DifferenceInPathLoss[360];// Array to storing the difference in path loss "Ki" on start
 
 public:
     RIMFading();
@@ -67,7 +71,7 @@ public:
      * returns the loss factor as a function of propagation speed, carrier, frequency and distance.
      */
 
-    virtual double RIMPathLossCalculation(double, double) const;
+    virtual double RIMPathLossCalculation(double, int) const;
     virtual double computeAngles2D(const ITransmission *transmission, const IArrival *arrival) const;
     virtual double computeAngles3D(const ITransmission *transmission, const IArrival *arrival, double *angle) const;
 
