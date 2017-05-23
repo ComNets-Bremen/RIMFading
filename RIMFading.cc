@@ -20,12 +20,12 @@
  ******************************************************************************/
 
 /**
-*  The C++ implementation file of the RIMFading Radio Propagation Model for the INET Framework
-* in OMNeT++.
-*
-* @authors : Behruz Khalilov (behruz@uni-bremen.de), Anas bin Muslim (anas1@uni-bremen.de)
-*
-*/
+ *  The C++ implementation file of the RIMFading Radio Propagation Model for the INET Framework
+ * in OMNeT++.
+ *
+ * @authors : Behruz Khalilov (behruz@uni-bremen.de), Anas bin Muslim (anas1@uni-bremen.de)
+ *
+ */
 #include <iostream>
 #include <fstream>
 #include "inet/physicallayer/pathloss/RIMFading.h"
@@ -41,10 +41,11 @@ namespace physicallayer {
 Define_Module(RIMFading);
 
 RIMFading::RIMFading() :
-       a(1.5),
-       b(1),
-       model(2),
-       DOI()
+               a(1.5),
+               b(1),
+               model(2),
+               DOI()
+
 {
 }
 
@@ -56,6 +57,33 @@ void RIMFading::initialize(int stage)
         b=par("b");
         model=par("model");
         DOI=par("DOI");
+
+    }
+
+    ofstream myfile;
+
+    //Irregularity varies for each degree => ki varies
+    double ki = 1;
+    double ran = weibull(a,b);
+    int sign = 0;
+
+    for(int i=0; i<360; i++){
+        sign = intuniform(0, 1);
+        if(sign==0){sign = sign -1;}
+        ran = weibull(a,b);
+        if(i==0)
+            ki=1;
+        else{
+            ki += sign*(ran * DOI);
+        }
+        DifferenceInPathLoss[i] = ki;
+    }
+
+    for(int i=0; i<360; i++){
+        //write the result of a path-loss in the file
+        myfile.open("DifferenceInPathLoss.txt",std::ios::app);
+        myfile << DifferenceInPathLoss[i] <<"\n";
+        myfile.close();
     }
 }
 
@@ -157,34 +185,12 @@ double RIMFading::computeAngles3D(const ITransmission *transmission, const IArri
  * Path Loss calculation of RIMFading Propagation Model
  */
 
-double RIMFading::RIMPathLossCalculation(double freeSpacePathLoss, double iter) const
+double RIMFading::RIMPathLossCalculation(double freeSpacePathLoss, int iter) const
 {
 
-    ofstream myfile;
+return freeSpacePathLoss*DifferenceInPathLoss[iter-1];
 
-    //Irregularity varies for each degree => ki varies
-    double ki = 1;
-    double ran = weibull(a,b);
-    int sign = 0;
-
-    for(int i=0; i<iter; i++){
-        sign = intuniform(0, 1);
-        if(sign==0){sign = sign -1;}
-        ran = weibull(a,b);
-        if(i==0)
-            ki=1;
-        else{
-            ki += sign*(ran * DOI);
-        }
-    }
-    EV<<"Path Loss : "<<freeSpacePathLoss * ki<<"\n";
-   //write the result of a path-loss in the file
-    myfile.open("pathloss.txt",std::ios::app);
-    myfile << "Path Loss : " << freeSpacePathLoss * ki <<"\n";
-    myfile.close();
-
-    return freeSpacePathLoss * ki;
-}
+  }
 
 double RIMFading::computePathLoss(const ITransmission *transmission, const IArrival *arrival) const {
     auto radioMedium = transmission->getTransmitter()->getMedium();
@@ -200,7 +206,6 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
 
-
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
     if(model==2){
@@ -214,9 +219,10 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
         EV<<"Please give dimension model either in 2D or 3D"<<"\n";
     }
     loopIterations = theta + phi;
-    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, loopIterations);
+    //convert double to int -- since angle can be any double value it should be rounded to integer value
+    int resangle= nearbyint(loopIterations);
 
-    EV<<"Path loss iteration : "<<resultPL<<"\n";
+    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle); 
 
     return resultPL;
 }
