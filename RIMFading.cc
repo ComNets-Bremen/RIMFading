@@ -80,7 +80,7 @@ void RIMFading::initialize(int stage)
     }
 
     for(int i=0; i<360; i++){
-        //write the result of a path-loss in the file
+        //write the result of coefficient of irregularity in the file
         myfile.open("DifferenceInPathLoss.txt",std::ios::app);
         myfile << DifferenceInPathLoss[i] <<"\n";
         myfile.close();
@@ -215,9 +215,6 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
 
-    ofstream myfile;
-
-
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
     if(model==2){
@@ -234,17 +231,7 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     //convert double to int -- since angle can be any double value it should be rounded to integer value
     int resangle= nearbyint(loopIterations);
 
-    EV << resangle << "\n";
-    myfile.open("resangle.txt",std::ios::app);
-    myfile << resangle <<"\n";
-    myfile.close();
-
-
     double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle);
-
-    EV<<"Path loss: "<<resultPL<<"\n";
-
-
     return resultPL;
 }
 
