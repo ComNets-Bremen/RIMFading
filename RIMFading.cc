@@ -41,10 +41,10 @@ namespace physicallayer {
 Define_Module(RIMFading);
 
 RIMFading::RIMFading() :
-               a(1.5),
-               b(1),
-               model(2),
-               DOI()
+            a(1.5),
+            b(1),
+            model(2),
+            DOI()
 
 {
 }
@@ -187,10 +187,19 @@ double RIMFading::computeAngles3D(const ITransmission *transmission, const IArri
 
 double RIMFading::RIMPathLossCalculation(double freeSpacePathLoss, int iter) const
 {
+    ofstream myfile;
 
-return freeSpacePathLoss*DifferenceInPathLoss[iter-1];
+    EV<<"Path Loss : "<<freeSpacePathLoss*DifferenceInPathLoss[iter-1]<<"\n";
 
-  }
+    //write the result of a path-loss in the file
+
+    myfile.open("pathloss.txt",std::ios::app);
+    myfile << "Path Loss : " << freeSpacePathLoss*DifferenceInPathLoss[iter-1] <<"\n";
+    myfile.close();
+
+    return freeSpacePathLoss*DifferenceInPathLoss[iter-1];
+
+}
 
 double RIMFading::computePathLoss(const ITransmission *transmission, const IArrival *arrival) const {
     auto radioMedium = transmission->getTransmitter()->getMedium();
@@ -205,6 +214,9 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
 
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
+
+    ofstream myfile;
+
 
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
@@ -222,7 +234,16 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     //convert double to int -- since angle can be any double value it should be rounded to integer value
     int resangle= nearbyint(loopIterations);
 
-    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle); 
+    EV << resangle << "\n";
+    myfile.open("resangle.txt",std::ios::app);
+    myfile << resangle <<"\n";
+    myfile.close();
+
+
+    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle);
+
+    EV<<"Path loss: "<<resultPL<<"\n";
+
 
     return resultPL;
 }
