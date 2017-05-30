@@ -67,18 +67,20 @@ void RIMFading::initialize(int stage)
     double ran = weibull(a,b);
     int sign = 0;
 
-    for(int i=0; i<360; i++){
-        sign = intuniform(0, 1);
-        if(sign==0){sign = sign -1;}
-        ran = weibull(a,b);
-        if(i==0)
-            ki=1;
-        else{
-            ki += sign*(ran * DOI);
+    // this loop generates Ki and checks condition |K0-k359|<=DOI; if so, result is recorded
+    do{
+        for(int i=0; i<360; i++){
+            sign = intuniform(0, 1);
+            if(sign==0){sign = sign -1;}
+            ran = weibull(a,b);
+            if(i==0)
+                ki=1;
+            else{
+                ki += sign*(ran * DOI);
+            }
+            DifferenceInPathLoss[i] = ki;
         }
-        DifferenceInPathLoss[i] = ki;
-    }
-
+    } while(abs(DifferenceInPathLoss[0]-DifferenceInPathLoss[359])>DOI);
     for(int i=0; i<360; i++){
         //write the result of coefficient of irregularity in the file
         myfile.open("DifferenceInPathLoss.txt",std::ios::app);
@@ -215,6 +217,9 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
 
+    ofstream myfile;
+
+
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
     if(model==2){
@@ -231,7 +236,17 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     //convert double to int -- since angle can be any double value it should be rounded to integer value
     int resangle= nearbyint(loopIterations);
 
+    EV << resangle << "\n";
+    myfile.open("resangle.txt",std::ios::app);
+    myfile << resangle <<"\n";
+    myfile.close();
+
+
     double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle);
+
+    EV<<"Path loss: "<<resultPL<<"\n";
+
+
     return resultPL;
 }
 
