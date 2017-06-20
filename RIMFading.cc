@@ -184,7 +184,7 @@ double RIMFading::computeAngles3D(const ITransmission *transmission, const IArri
 
 
 /*
- * Path Loss calculation of RIMFading Propagation Model
+ * Path Loss calculation of RIM Propagation Model
  */
 
 double RIMFading::RIMPathLossCalculation(double freeSpacePathLoss, int iter) const
@@ -217,9 +217,6 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     double theta = 0, loopIterations = 0, phi=0;
     double *angle = &phi;
 
-    ofstream myfile;
-
-
     double freeSpacePathLoss = computeFreeSpacePathLoss(waveLength, distance, alpha, systemLoss);
 
     if(model==2){
@@ -236,16 +233,7 @@ double RIMFading::computePathLoss(const ITransmission *transmission, const IArri
     //convert double to int -- since angle can be any double value it should be rounded to integer value
     int resangle= nearbyint(loopIterations);
 
-    EV << resangle << "\n";
-    myfile.open("resangle.txt",std::ios::app);
-    myfile << resangle <<"\n";
-    myfile.close();
-
-
-    double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle);
-
-    EV<<"Path loss: "<<resultPL<<"\n";
-
+   double resultPL = RIMPathLossCalculation(freeSpacePathLoss, resangle);
 
     return resultPL;
 }
