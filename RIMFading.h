@@ -32,7 +32,6 @@
 #include "inet/common/INETDefs.h"
 #include "math.h"
 #include "inet/physicallayer/pathloss/FreeSpacePathLoss.h"
-#include "inet/physicallayer/pathloss/RicianFading.h"
 #include "inet/environment/contract/IPhysicalEnvironment.h"
 namespace inet {
 
