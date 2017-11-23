@@ -80,7 +80,7 @@ void RIMFading::initialize(int stage)
             }
             DifferenceInPathLoss[i] = ki;
         }
-    } while(abs(DifferenceInPathLoss[0]-DifferenceInPathLoss[359])>DOI);
+    } while(abs(DifferenceInPathLoss[0]-DifferenceInPathLoss[359])<=DOI);
     for(int i=0; i<360; i++){
         //write the result of coefficient of irregularity in the file
         myfile.open("DifferenceInPathLoss.txt",std::ios::app);
